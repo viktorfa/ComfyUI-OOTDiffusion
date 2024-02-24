@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 from torchvision.transforms.functional import to_pil_image, to_tensor
+from pathlib import Path
 
 
 from .humanparsing.aigc_run_parsing import Parsing
@@ -15,14 +16,15 @@ _category_get_mask_input = {
     "dress": "dresses",
 }
 
+
 class OOTDiffusionModel:
-    def __init__(self, hg_root: str = "/workspaces/ComfyUI-OOTDiffusion/models", cache_dir: str = "/workspaces/ComfyUI-OOTDiffusion/.hf_cache"):
+    def __init__(self, hg_root: str, cache_dir: str = None):
         self.model = OOTDiffusion(
             hg_root=hg_root,
             cache_dir=cache_dir,
         )
 
-    def generate(self, pipe, cloth_image, model_image, seed=0, steps=1, cfg=1.0):
+    def generate(self, pipe, cloth_path: str | bytes | Path, model_path: str | bytes | Path, seed=0, steps=1, cfg=1.0):
         category = "upperbody"
         # if model_image.shape != (1, 1024, 768, 3) or (
         #     cloth_image.shape != (1, 1024, 768, 3)
@@ -33,18 +35,8 @@ class OOTDiffusionModel:
         #     )
 
         # (1,H,W,3) -> (3,H,W)
-        model_image = model_image.squeeze(0)
-        model_image = model_image.permute((2, 0, 1))
-        model_image = to_pil_image(model_image)
-        if model_image.size != (768, 1024):
-            print(f"Inconsistent model_image size {model_image.size} != (768, 1024)")
-        model_image = model_image.resize((768, 1024))
-        cloth_image = cloth_image.squeeze(0)
-        cloth_image = cloth_image.permute((2, 0, 1))
-        cloth_image = to_pil_image(cloth_image)
-        if cloth_image.size != (768, 1024):
-            print(f"Inconsistent cloth_image size {cloth_image.size} != (768, 1024)")
-        cloth_image = cloth_image.resize((768, 1024))
+        model_image = Image.open(model_path).resize((768, 1024))
+        cloth_image = Image.open(cloth_path).resize((768, 1024))
 
         model_parse, _ = Parsing(pipe.device)(model_image.resize((384, 512)))
         keypoints = OpenPose()(model_image.resize((384, 512)))
