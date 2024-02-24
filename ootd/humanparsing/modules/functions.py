@@ -19,7 +19,7 @@ _backend = load(
     name="inplace_abn",
     extra_cflags=["-O3"],
     sources=[path.join(_src_path, f) for f in _source_file_names],
-    extra_cuda_cflags=["--expt-extended-lambda"],
+    extra_cuda_cflags=["--expt-extended-lambda"] if torch.cuda.is_available() else None,
 )
 
 # Activation names
