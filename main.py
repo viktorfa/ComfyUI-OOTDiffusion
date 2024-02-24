@@ -1,4 +1,4 @@
-from ootd import OOTDiffusionModel
+from oot_diffusion import OOTDiffusionModel
 from PIL import Image
 from pathlib import Path
 
@@ -22,6 +22,3 @@ if __name__ == "__main__":
     garment_image = Image.open(example_garment_path)
 
     print(model.generate(model, model_image, garment_image))
-
-
-    

@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="ComfyUI-OOTDiffusion",
+    name="oot_diffusion",
     version="0.0.1",
     description="A description of your project",
-    author="Your Name",
-    author_email="your@email.com",
-    url="https://github.com/viktorfa/ComfyUI-OOTDiffusion",
-    packages=find_packages(include=["ootd", "ootd.*"]),
+    author="Viktor Frede Andersen",
+    author_email="vikfand@gmail.com",
+    url="https://github.com/viktorfa/oot_diffusion",
+    packages=find_packages(include=["oot_diffusion", "oot_diffusion.*"]),
     include_package_data=True,
     install_requires=[
         "torch",
@@ -32,10 +32,7 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "License :: Apache 2.0",
+        "Programming Language :: Python :: 3.10",
     ],
 )

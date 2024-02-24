@@ -1,91 +1,72 @@
 # ComfyUI OOTDiffusion
 
-A ComfyUI custom node that simply integrates the [OOTDiffusion](https://github.com/levihsu/OOTDiffusion) functionality.
+A packaged version of [OOTDiffusion](https://github.com/levihsu/OOTDiffusion) that works with Pip.
 
-一个简单接入 OOTDiffusion 的 ComfyUI 节点。
+No need to manually download models, checkpoints, weights etc. Should work out if the box.
 
-👇 下载下面的流程图拖到 ComfyUI 前端即可运行 👇 Download and drag into ComfyUI frontend
+Needs CUDA and GPU
 
-![](./assets/graph.png)
 
-## Instruction 指南
+OOTDiffusion 的打包版本
 
-根据 https://git-lfs.com 安装 git lfs：
 
-Ubuntu / Debian:
 
-```txt
-sudo apt install git-lfs
+## Instructions
+
+`pip install git+https://github.com/viktorfa/oot_diffusion.git`
+
+Examples for Colab. But can be used anywhere.
+
+If you don't set hg_root, a folder called ootd_models will be created in your working dir.
+
+Load model
+```python
+from oot_diffusion import OOTDiffusionModel
+from PIL import Image
+from pathlib import Path
+
+
+def get_ootd_model():
+  model = OOTDiffusionModel(
+    hg_root="/content/models",
+    cache_dir="/content/drive/MyDrive/hf_cache",
+  )
+  return model
 ```
 
-git lfs 初始化：
+Generate image
+```python
+def generate_image():
+  model = get_ootd_model()
+  generated_images, mask_image = model.generate(
+      #model_path="/YOUR_MODEL.jpg",
+      #cloth_path="/YOUR_GARMENT.jpg",
+      # Will use default example images if not given
+      steps=10,
+      cfg=2.0,
+      num_samples=2,
+    )
 
-```txt
-git lfs install
+  return generated_images, mask_image
+
+
+generated_images, mask_image = generate_image()
 ```
 
-拉取 huggingface 🤗 库至 ComfyUI 根目录下的 `models/OOTDiffusion` 目录：
+Display images
 
-```txt
-git clone https://huggingface.co/levihsu/OOTDiffusion models/OOTDiffusion
+```python
+from IPython.display import display
+
+for image in generated_images:
+  display(image)
+
+display(mask_image)
 ```
 
-拉取 huggingface 时大约会下载 8 个模型，假如断开连接，可以使用下面命令恢复下载：
 
-```txt
-cd models/OOTDiffusion
-git lfs fetch
-git checkout main
-```
+## Credits 
 
-创建环境并下载依赖：
+The original authors of [OOTDiffusion](https://github.com/levihsu/OOTDiffusion)
 
-```txt
-conda create -n ootd
-conda activate ootd
-
-# 选择安装 11.8 / 12.1 cuda toolkit
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
-
-# 安装此项目的依赖
-pip install -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
-```
-
-启动 ComfyUI 即可。
-
-## FAQ 常见错误
-
-> OSError: CUDA_HOME environment variable is not set. Please set it to your CUDA install root.
->
-> 解决方法：`conda install -c conda-forge cudatoolkit-dev`。
-> 参照：https://github.com/conda/conda/issues/7757
-
-> subprocess.CalledProcessError: Command '['where', 'cl']' returned non-zero exit status 1.
->
-> 解决办法：仅在 Windows 下出现，可能需要配置一下 MSVC 编译器。
-
-## Node 节点
-
-Load OOTDiffusion: 加载 OOTDiffusion Pipeline
-
-OOTDiffusion Generate: 生成图像
-
-    cfg: 输出图像和输入衣服的贴合程度
-
-## Example image 示例图片
-
-[衣服 1](./assets/cloth_1.jpg)
-
-[模特 1](./assets/model_1.png)
-
-## Detail 细节
-
-目前此项目只是对 OOTDiffusion 的功能做了个简单的迁移。
-OOTDiffusion 本体依赖于 `diffusers==0.24.0` 实现，所以假如有其他节点的依赖冲突是没办法解决的（本就不该依赖 diffusers）。
-靠 vendor 也能解决，所以也不是大问题。
-
-不使用 huggingface_hub 是因为 OOTD 提供的仓库并不是一个单纯的 diffusion model structure，
-里面还包含了独立的 openpose 和 humanparsing 模型文件。
-目前只有 openai/clip-vit-large-patch14 是使用 huggingface_hub 下载的。
-
-在 `Ubuntu 22.02` / `Python 3.10.x` 下可以正常运行。Windows 没有测试过。
+The authors of [ComfyUI-OOTDiffusion](https://github.com/AuroBit/ComfyUI-OOTDiffusion), who made it easier to package the code.
