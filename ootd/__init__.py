@@ -42,11 +42,43 @@ class OOTDiffusionModel:
             self.load_pipe()
         return self.pipe
 
+    def generate(
+        self,
+        cloth_path: str
+        | bytes
+        | Path
+        | Image.Image = "https://raw.githubusercontent.com/viktorfa/ComfyUI-OOTDiffusion/main/ootd/assets/cloth_1.jpg",
+        model_path: str
+        | bytes
+        | Path
+        | Image.Image = "https://raw.githubusercontent.com/viktorfa/ComfyUI-OOTDiffusion/main/ootd/assets/model_1.png",
+        seed=0,
+        steps=1,
+        cfg=1.0,
+        num_samples=1,
+    ):
+        return self.generate_static(
+            self.get_pipe(),
+            cloth_path,
+            model_path,
+            self.hg_root,
+            seed,
+            steps,
+            cfg,
+            num_samples,
+        )
+
     @staticmethod
     def generate_static(
         pipe,
-        cloth_path: str | bytes | Path | Image.Image,
-        model_path: str | bytes | Path | Image.Image,
+        cloth_path: str
+        | bytes
+        | Path
+        | Image.Image = "https://raw.githubusercontent.com/viktorfa/ComfyUI-OOTDiffusion/main/ootd/assets/cloth_1.jpg",
+        model_path: str
+        | bytes
+        | Path
+        | Image.Image = "https://raw.githubusercontent.com/viktorfa/ComfyUI-OOTDiffusion/main/ootd/assets/model_1.png",
         hg_root: str = None,
         seed=0,
         steps=1,
@@ -98,26 +130,6 @@ class OOTDiffusionModel:
         masked_vton_img = masked_vton_img.convert("RGB")
 
         return (images, masked_vton_img)
-
-    def generate(
-        self,
-        cloth_path: str | bytes | Path,
-        model_path: str | bytes | Path,
-        seed=0,
-        steps=1,
-        cfg=1.0,
-        num_samples=1,
-    ):
-        return self.generate_static(
-            self.get_pipe(),
-            cloth_path,
-            model_path,
-            self.hg_root,
-            seed,
-            steps,
-            cfg,
-            num_samples,
-        )
 
     def __str__(self):
         return str(self.pipe if hasattr(self, "pipe") else "OOTDiffusionModel")
