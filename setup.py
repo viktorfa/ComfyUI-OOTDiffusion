@@ -2,13 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="ComfyUI-OOTDiffusion",
-    version="1.0.0",
+    version="0.0.1",
     description="A description of your project",
     author="Your Name",
     author_email="your@email.com",
-    url="https://github.com/yourusername/ComfyUI-OOTDiffusion",
-    #packages=find_packages(),
-    packages=['ootd'],
+    url="https://github.com/viktorfa/ComfyUI-OOTDiffusion",
+    packages=find_packages(include=["ootd", "ootd.*"]),
     install_requires=[
         "torch",
         "torchvision",
