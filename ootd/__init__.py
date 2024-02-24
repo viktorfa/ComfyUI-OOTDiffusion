@@ -66,13 +66,9 @@ class OOTDiffusionModel:
             seed=seed,
         )
 
-        output_image = to_tensor(images[0])
-        output_image = output_image.permute((1, 2, 0))
         masked_vton_img = masked_vton_img.convert("RGB")
-        masked_vton_img = to_tensor(masked_vton_img)
-        masked_vton_img = masked_vton_img.permute((1, 2, 0))
-
-        return ([output_image], [masked_vton_img])
+        
+        return ([images], [masked_vton_img])
 
     def load(self):
         return self.model
