@@ -14,4 +14,4 @@ tqdm
 gradio
 config
 einops
-ninja
+ninja==1.10.2
