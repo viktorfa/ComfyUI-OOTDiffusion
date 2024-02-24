@@ -15,6 +15,8 @@ _category_get_mask_input = {
     "dress": "dresses",
 }
 
+DEFAULT_HG_ROOT = Path(os.getcwd()) / "oodt_models"
+
 
 class OOTDiffusionModel:
     def __init__(self, hg_root: str = None, cache_dir: str = None):
@@ -24,7 +26,7 @@ class OOTDiffusionModel:
             cache_dir (str, optional): Path to the cache directory. Defaults to None.
         """
         if hg_root is None:
-            hg_root = os.getcwd()
+            hg_root = DEFAULT_HG_ROOT
         self.hg_root = hg_root
         self.cache_dir = cache_dir
 
@@ -52,7 +54,7 @@ class OOTDiffusionModel:
         num_samples=1,
     ):
         if hg_root is None:
-            hg_root = os.getcwd()
+            hg_root = DEFAULT_HG_ROOT
 
         category = "upperbody"
 
