@@ -31,6 +31,8 @@ from .pipelines_ootd.unet_vton_2d_condition import UNetVton2DConditionModel
 class OOTDiffusion:
     def __init__(self, hg_root: str, model_type: str = "hd", cache_dir: str = None):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.hg_root = hg_root
+        self.cache_dir = cache_dir
 
         if model_type not in ("hd", "dc"):
             raise ValueError(f"model_type must be 'hd' or 'dc', got {model_type!r}")
@@ -56,7 +58,7 @@ class OOTDiffusion:
         MODEL_PATH = f"{hg_root}/checkpoints/ootd"
 
         vae = AutoencoderKL.from_pretrained(
-            VAE_PATH, subfolder="vae", torch_dtype=torch.float16, cache_dir=f"{hg_root}"
+            VAE_PATH, subfolder="vae", torch_dtype=torch.float16, cache_dir=cache_dir
         )
         unet_garm = UNetGarm2DConditionModel.from_pretrained(
             UNET_PATH,

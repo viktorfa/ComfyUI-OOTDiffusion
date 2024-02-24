@@ -19,6 +19,8 @@ _category_get_mask_input = {
 
 class OOTDiffusionModel:
     def __init__(self, hg_root: str, cache_dir: str = None):
+        self.hg_root = hg_root
+        self.cache_dir = cache_dir
         self.model = OOTDiffusion(
             hg_root=hg_root,
             cache_dir=cache_dir,
@@ -38,7 +40,7 @@ class OOTDiffusionModel:
         model_image = Image.open(model_path).resize((768, 1024))
         cloth_image = Image.open(cloth_path).resize((768, 1024))
 
-        model_parse, _ = Parsing(pipe.device)(model_image.resize((384, 512)))
+        model_parse, _ = Parsing(pipe.device, self.hg_root)(model_image.resize((384, 512)))
         keypoints = OpenPose()(model_image.resize((384, 512)))
         mask, mask_gray = get_mask_location(
             pipe.model_type,
