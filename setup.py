@@ -7,7 +7,8 @@ setup(
     author="Your Name",
     author_email="your@email.com",
     url="https://github.com/yourusername/ComfyUI-OOTDiffusion",
-    packages=find_packages(),
+    #packages=find_packages(),
+    packages=['ootd'],
     install_requires=[
         "torch",
         "torchvision",
