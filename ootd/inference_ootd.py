@@ -38,8 +38,15 @@ class OOTDiffusion:
         self.model_type = model_type
 
         # hg_root = str(Path.cwd().resolve() / hg_root)
-        VIT_PATH = f"openai/clip-vit-large-patch14"
-        VAE_PATH = f"{hg_root}/checkpoints/ootd"
+        VIT_PATH = "openai/clip-vit-large-patch14"
+        VAE_PATH = "levihsu/OOTDiffusion"
+
+
+        
+
+        
+
+
         if model_type == "hd":
             UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_hd/checkpoint-36000"
         else:
@@ -50,18 +57,21 @@ class OOTDiffusion:
             VAE_PATH,
             subfolder="vae",
             torch_dtype=torch.float16,
+            cache_dir=f"{hg_root}"
         )
         unet_garm = UNetGarm2DConditionModel.from_pretrained(
             UNET_PATH,
             subfolder="unet_garm",
             torch_dtype=torch.float16,
             use_safetensors=True,
+            cache_dir=f"{hg_root}"
         )
         unet_vton = UNetVton2DConditionModel.from_pretrained(
             UNET_PATH,
             subfolder="unet_vton",
             torch_dtype=torch.float16,
             use_safetensors=True,
+            cache_dir=f"{hg_root}"
         )
         self.pipe = OotdPipeline.from_pretrained(
             MODEL_PATH,
@@ -78,9 +88,10 @@ class OOTDiffusion:
         self.pipe.scheduler = UniPCMultistepScheduler.from_config(
             self.pipe.scheduler.config
         )
-        self.auto_processor = AutoProcessor.from_pretrained(VIT_PATH)
+        self.auto_processor = AutoProcessor.from_pretrained(VIT_PATH, cache_dir=f"{hg_root}")
         self.image_encoder = CLIPVisionModelWithProjection.from_pretrained(VIT_PATH).to(
-            self.device
+            self.device,
+            cache_dir=f"{hg_root}"
         )
         self.tokenizer = CLIPTokenizer.from_pretrained(
             MODEL_PATH,
