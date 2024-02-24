@@ -29,16 +29,16 @@ class OOTDiffusionModel:
         self.cache_dir = cache_dir
 
     def load_pipe(self):
-        self.model = OOTDiffusion(
+        self.pipe = OOTDiffusion(
             hg_root=self.hg_root,
             cache_dir=self.cache_dir,
         )
-        return self.model
+        return self.pipe
 
     def get_pipe(self):
-        if not hasattr(self, "model"):
+        if not hasattr(self, "pipe"):
             self.load_pipe()
-        return self.model
+        return self.pipe
 
     @staticmethod
     def generate_static(
@@ -118,7 +118,7 @@ class OOTDiffusionModel:
         )
 
     def __str__(self):
-        return str(self.model)
+        return str(self.pipe)
 
     def __repr__(self):
-        return str(self.model)
+        return str(self.pipe)
