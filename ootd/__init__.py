@@ -118,7 +118,7 @@ class OOTDiffusionModel:
         )
 
     def __str__(self):
-        return str(self.pipe)
+        return str(self.pipe if hasattr(self, "pipe") else "OOTDiffusionModel")
 
     def __repr__(self):
-        return str(self.pipe)
+        return str(self.pipe if hasattr(self, "pipe") else "OOTDiffusionModel")
