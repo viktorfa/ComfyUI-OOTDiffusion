@@ -1,6 +1,5 @@
-import numpy as np
+import os
 from PIL import Image
-from torchvision.transforms.functional import to_pil_image, to_tensor
 from pathlib import Path
 
 
@@ -18,29 +17,57 @@ _category_get_mask_input = {
 
 
 class OOTDiffusionModel:
-    def __init__(self, hg_root: str, cache_dir: str = None):
+    def __init__(self, hg_root: str = None, cache_dir: str = None):
+        """
+        Args:
+            hg_root (str, optional): Path to the hg root directory. Defaults to CWD.
+            cache_dir (str, optional): Path to the cache directory. Defaults to None.
+        """
+        if hg_root is None:
+            hg_root = os.getcwd()
         self.hg_root = hg_root
         self.cache_dir = cache_dir
+
+    def load_pipe(self):
         self.model = OOTDiffusion(
-            hg_root=hg_root,
-            cache_dir=cache_dir,
+            hg_root=self.hg_root,
+            cache_dir=self.cache_dir,
         )
+        return self.model
 
-    def generate(self, pipe, cloth_path: str | bytes | Path, model_path: str | bytes | Path, seed=0, steps=1, cfg=1.0):
+    def get_pipe(self):
+        if not hasattr(self, "model"):
+            self.load_pipe()
+        return self.model
+
+    @staticmethod
+    def generate_static(
+        pipe,
+        cloth_path: str | bytes | Path | Image.Image,
+        model_path: str | bytes | Path | Image.Image,
+        hg_root: str = None,
+        seed=0,
+        steps=1,
+        cfg=1.0,
+        num_samples=1,
+    ):
+        if hg_root is None:
+            hg_root = os.getcwd()
+
         category = "upperbody"
-        # if model_image.shape != (1, 1024, 768, 3) or (
-        #     cloth_image.shape != (1, 1024, 768, 3)
-        # ):
-        #     raise ValueError(
-        #         f"Input image must be size (1, 1024, 768, 3). "
-        #         f"Got model_image {model_image.shape} cloth_image {cloth_image.shape}"
-        #     )
 
-        # (1,H,W,3) -> (3,H,W)
-        model_image = Image.open(model_path).resize((768, 1024))
-        cloth_image = Image.open(cloth_path).resize((768, 1024))
+        if isinstance(cloth_path, Image.Image):
+            cloth_image = cloth_path
+        else:
+            cloth_image = Image.open(cloth_path)
+        if isinstance(model_path, Image.Image):
+            model_image = model_path
+        else:
+            model_image = Image.open(model_path)
+        model_image = model_image.resize((768, 1024))
+        cloth_image = cloth_image.resize((768, 1024))
 
-        model_parse, _ = Parsing(pipe.device, self.hg_root)(model_image.resize((384, 512)))
+        model_parse, _ = Parsing(pipe.device, hg_root)(model_image.resize((384, 512)))
         keypoints = OpenPose()(model_image.resize((384, 512)))
         mask, mask_gray = get_mask_location(
             pipe.model_type,
@@ -60,18 +87,35 @@ class OOTDiffusionModel:
             image_vton=masked_vton_img,
             mask=mask,
             image_ori=model_image,
-            num_samples=1,
+            num_samples=num_samples,
             num_steps=steps,
             image_scale=cfg,
             seed=seed,
         )
 
         masked_vton_img = masked_vton_img.convert("RGB")
-        
-        return ([images], [masked_vton_img])
 
-    def load(self):
-        return self.model
+        return (images, masked_vton_img)
+
+    def generate(
+        self,
+        cloth_path: str | bytes | Path,
+        model_path: str | bytes | Path,
+        seed=0,
+        steps=1,
+        cfg=1.0,
+        num_samples=1,
+    ):
+        return self.generate_static(
+            self.get_pipe(),
+            cloth_path,
+            model_path,
+            self.hg_root,
+            seed,
+            steps,
+            cfg,
+            num_samples,
+        )
 
     def __str__(self):
         return str(self.model)
