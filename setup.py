@@ -8,6 +8,9 @@ setup(
     author_email="your@email.com",
     url="https://github.com/viktorfa/ComfyUI-OOTDiffusion",
     packages=find_packages(include=["ootd", "ootd.*"]),
+    package_data={
+        "ootd": ["humanparsing/modules/src/**/*"],
+    },
     install_requires=[
         "torch",
         "torchvision",
